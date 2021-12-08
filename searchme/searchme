@@ -1,0 +1,132 @@
+#!/bin/bash
+# -*- coding: utf-8 -*-
+#
+#######################################################################################################################
+#                                                             _                                                       #
+#                                    ()                      | |                                                      #
+#                                    /\  _   __,   ,_    __  | |     _  _  _    _                                     #
+#                                   /  \|/  /  |  /  |  /    |/ \   / |/ |/ |  |/                                     #
+#                                  /(__/|__/\_/|_/   |_/\___/|   |_/  |  |  |_/|__/                                   #
+#                                                                                                                     #
+#                                                                                                                     #
+#######################################################################################################################
+#
+# searchme
+# -------------------------------------------------------------------
+# This script was created by Xuanming in 2021, thanks for your reading
+# Location: Host: /usr/bin/searchme
+# Statement: This command could search for a keyword from the Ansible hosts inventory
+# Usage:
+#     $ searchme [option...] [keyword]
+
+
+
+CONFIG=/etc/searchme.conf
+
+
+
+# =====================================================================================================================
+# Load Environment
+# =====================================================================================================================
+source /etc/init.d/functions
+source /etc/profile
+if [[ ${?} != 0 ]]; then
+    action "Load host environment" /bin/false
+    exit 1
+fi
+
+/usr/bin/getopt -T &> /dev/null
+if [[ ${?} != 4 ]]; then
+    action "Load /usr/bin/getopt command" /bin/false
+    exit 1
+fi
+
+
+
+# =====================================================================================================================
+# Define Function
+# =====================================================================================================================
+function usage() {
+    /usr/bin/echo -e ""
+    /usr/bin/echo -e "Usage: \033[33;1msearchme [option...] [keyword]\033[0m"
+    /usr/bin/echo -e "    -a, --all                       list all hosts"
+    /usr/bin/echo -e "    -h, --help                      list this help information"
+    /usr/bin/echo -e "    -v, --version                   list this command version information"
+    /usr/bin/echo -e ""
+    exit 0
+}
+
+function version() {
+    /usr/bin/echo -e ""
+    /usr/bin/echo -e "command version: alpha 1.0.0"
+    /usr/bin/echo -e "created by FuXuanming (waitspring)"
+    /usr/bin/echo -e ""
+    exit 0
+}
+
+function search() {
+    if [[ ${1} == 0 ]]; then
+        /usr/bin/cat ${inventory}
+        exit 0
+    elif [[ ${1} == 1 ]]; then
+        /usr/bin/egrep --color=always ${2} ${inventory} > /tmp/searchme_${UID}
+        /usr/bin/sed -i -r 's/31m/33m/g' /tmp/searchme_${UID}
+        /usr/bin/cat /tmp/searchme_${UID} | /usr/bin/xargs -i echo -e {}
+        exit 0
+    else
+        action "Interval error" /bin/false
+        exit 2
+    fi
+}
+
+
+
+# =====================================================================================================================
+# Prerequisite Parameter
+# =====================================================================================================================
+if [[ ${#} == 0 ]]; then
+    action "Check parameters" /bin/false
+    exit 1
+fi
+
+if [[ -f ${CONFIG} ]]; then
+    for line in $(/usr/bin/egrep "^inventory=" ${CONFIG}); do
+        eval ${line}
+    done
+else
+    action "Check configure file ${CONFIG}" /bin/false
+    exit 1
+fi
+
+
+
+# =====================================================================================================================
+# Command Main Part
+# =====================================================================================================================
+PARAMETERS=$(/usr/bin/getopt --options a,h,v --longoptions all,help,version -n ${0} -- ${@})
+if [[ ${?} != 0 ]]; then
+    action "Check parameters" /bin/false
+    exit 1
+else
+    eval set -- ${PARAMETERS}
+fi
+
+while [[ true ]]; do
+    case ${1} in
+        -h | --help )
+        usage
+        ;;
+        -v | --version )
+        version
+        ;;
+        -a | --all )
+        search 0
+        ;;
+        * )
+        search 1 ${2}
+        ;;
+    esac
+done
+
+
+
