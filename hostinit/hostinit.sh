@@ -50,6 +50,7 @@ function usage() {
     /usr/bin/echo -e "    --env environment               environment tag code in PS1"
     /usr/bin/echo -e "    --host hostname                 hostname for virtual host"
     /usr/bin/echo -e "    --string str                    welcome string for user session"
+    /usr/bin/echo -e "    --test                          test command exec's result"
     /usr/bin/echo -e "    --help                          show this help information"
     /usr/bin/echo -e "    --version                       show this command version information"
     /usr/bin/echo -e ""

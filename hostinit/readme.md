@@ -43,15 +43,16 @@ Hostinit 小工具用于一键式的执行公有云主机的初始化服务, 具
 
 Hostinit 小工具的使用方法说明如下:
 
-```
+```bash
 $ sh hostinit.sh [option ...]
 
-              --directory /path/to/dir           # 业务系统使用的基础目录, 默认值为 /opt
-              --domain ipaddr,...                # 更新主机的域名解析服务器, 默认值为空 (沿用公有云原有的域名解析服务器)
-              --env environment                  # 更新主机的环境标签, 默认值为 prd
-              --host hostname                    # 更新主机的名称
-              --string str                       # 用户会话的欢迎语句, 默认为空值
-              --help                             # 回显命令帮助信息
-              --version                          # 回显命令版本信息
+      --directory /path/to/dir                   # 业务系统使用的基础目录, 默认值为 /opt
+      --domain ipaddr,...                        # 更新主机的域名解析服务器, 默认值为空 (沿用公有云原有的域名解析服务器)
+      --env environment                          # 更新主机的环境标签, 默认值为 prd
+      --host hostname                            # 更新主机的名称
+      --string str                               # 用户会话的欢迎语句, 默认为空值
+      --test                                     # 使用测试模式执行
+      --help                                     # 回显命令帮助信息
+      --version                                  # 回显命令版本信息
 ```
 
