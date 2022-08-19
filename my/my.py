@@ -2,22 +2,23 @@
 # -*- coding: utf-8 -*-
 #
 #######################################################################################################################
-#                                                 ,__ __          __                                                  #
-#                                                /|  |  |        /  )                                                 #
-#                                                 |  |  |          /                                                  #
-#                                                 |  |  |  |   |  /                                                   #
-#                                                 |  |  |_/ \_/|//___                                                 #
-#                                                             /|                                                      #
-#                                                             \|                                                      #
+#                                                   ,__ __                                                            #
+#                                                  /|  |  |                                                           #
+#                                                   |  |  |                                                           #
+#                                                   |  |  |  |   |                                                    #
+#                                                   |  |  |_/ \_/|/                                                   #
+#                                                               /|                                                    #
+#                                                               \|                                                    #
 #######################################################################################################################
 """
 my2.py
 -------------------------------------------------------------------
 This script was created by Xuanming in 2022, thanks for your reading
-Location: Host: python/lib/my2.py
-Statement: This Python package file support some basic obj/fun to us in Python2 environment
+Location: Host: python/lib/my.py
+Statement: This Python package file support some basic obj/fun to us in Python2/3 environment
 Usage:
-     import my2
+     import my
+     from my import *
 """
 
 
@@ -71,6 +72,9 @@ class Logger(object):
         Logger.output.error(message)
 
 class RaisePoint(Exception):
+    """
+    提供多层嵌套循环的循环跳出工具
+    """
     pass
 
 
@@ -92,11 +96,12 @@ def except_return_none(func):
 @except_return_none
 def gbk_to_utf8(func):
     """
+    转换 GBK 字符编码到 UTF-8 字符编码的装饰器
     """
     def wrapper(*args, **kwargs):
         meta = func(*args, **kwargs)
         for k, v in meta.items():
-            if v is not None and type(v) is str and 'UTF' is not in sys.stdin.encoding.upper():
+            if v is not None and type(v) is str and 'UTF' not in sys.stdin.encoding.upper():
                 meta[k] = v.decode('GBK').encode('UTF-8')
         return meta
     return wrapper
