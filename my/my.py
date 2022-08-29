@@ -73,7 +73,9 @@ class RaisePoint(Exception):
     """
     提供多层嵌套循环的循环跳出工具
     """
-    pass
+    def __str__(self):
+        message = 'Function: ' + self.__class__.__name__ + '() Exception: ' + 'Escape from multiple nested loop'
+        return message
 
 
 # =====================================================================================================================

@@ -17,13 +17,16 @@ This script was created by Xuanming in 2022, thanks for your reading
 Location: Host: project/cleanpyc.py
 Statement: This Python script file clean every *.pyc files in project directory
 Usage:
-     python cleanpyc.py
+     $ python cleanpyc.py
 """
 
 
 import os
 
 
+# =====================================================================================================================
+# Main Part
+# =====================================================================================================================
 if __name__ == '__main__':
      for prefix, dirs, files in os.walk(os.path.dirname(os.path.abspath('__file__'))):
           for name in files:
