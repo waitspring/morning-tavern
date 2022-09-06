@@ -32,15 +32,16 @@ import logging
 # =====================================================================================================================
 class Logger(object):
     """
-    提供标准的日志输出工具, 日志输出格式为 2022-02-22 22:22:22.222 INFO This is demo output.
+    提供标准的日志输出工具, 日志输出格式为 2022-02-22 22:22:22.222 INFO [xxxxxx] This is demo output.
     默认的:
         * DEBUG 及其以上级别的日志都是有效输出
         * INFO  及其以上级别的日志输出到日志文件
         * ERROR 及其以上级别的日志输出到终端
     """
-    output = logging.getLogger()
+    output = logging.getLogger('xxxxxx')
     output.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(fmt='%(asctime)s.%(msecs)03d %(levelname)s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    formatter = logging.Formatter(fmt='%(asctime)s.%(msecs)03d %(levelname)s %(name)s %(message)s', 
+                                  datefmt='%Y-%m-%d %H:%M:%S')
     logfile = os.path.join(os.path.dirname(os.path.abspath('__file__')), 'log', 'xxxxxx.log')
     if not os.path.isdir(os.path.dirname(logfile)):
         os.makedirs(os.path.dirname(logfile))
@@ -60,10 +61,6 @@ class Logger(object):
     @staticmethod
     def info(message=str):
         Logger.output.info(message)
-
-    @staticmethod
-    def warn(message=str):
-        Logger.output.warn(message)
 
     @staticmethod
     def error(message=str):
