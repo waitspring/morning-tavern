@@ -57,24 +57,15 @@ class Logger(object):
 
     @staticmethod
     def debug(message=str):
-        if os.getenv('LANG') in ('en_US.UTF-8', 'zh_CN.UTF-8'):
-            Logger.output.debug(message)
-        else:
-            Logger.output.debug(message.decode('GBK').encode('UTF-8'))
+        Logger.output.debug(message)
 
     @staticmethod
     def info(message=str):
-        if os.getenv('LANG') in ('en_US.UTF-8', 'zh_CN.UTF-8'):
-            Logger.output.info(message)
-        else:
-            Logger.output.info(message.decode('GBK').encode('UTF-8'))
+        Logger.output.info(message)
 
     @staticmethod
     def error(message=str):
-        if os.getenv('LANG') in ('en_US.UTF-8', 'zh_CN.UTF-8'):
-            Logger.output.error(message)
-        else:
-            Logger.output.error(message.decode('GBK').encode('UTF-8'))
+        Logger.output.error(message)
 
 class RaisePoint(Exception):
     """
