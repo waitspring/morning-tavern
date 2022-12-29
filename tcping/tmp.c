@@ -154,12 +154,32 @@ int connect_to(struct timeval *begin, struct timeval *end, struct sockaddr_in *a
     int connect_result;
     int ms;
     int timeout = 10;
+    int mode = 0;
+    // struct timeval timeout;
+    // fd_set sfd;
+
+    // timeout.tv_sec = 6;
+    // timeout.tv_usec = 0;
 
     gettimeofday(begin, NULL);
     sock = socket(addr->sin_family, SOCK_STREAM, 0);
     setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(int));
     setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(int));
+    ioctl(sock, FIONBIO, (unsigned long *)&mode);
     connect_result = connect(sock, (struct sockaddr *)&addr, sizeof(addr));
+    // if (connect_result == 0) {
+    //     close(sock);
+    //     gettimeofday(end, NULL);
+    //     ms = (1000000 * (end->tv_sec - begin->tv_sec) + (end->tv_usec - begin->tv_usec)) / 1000;
+    //     return ms;
+    // } else {
+    //     FD_ZERO(&sfd);
+    //     FD_SET(sock, &sfd);
+    //     int tmp = select(sock + 1, NULL, &sfd, NULL, &timeout);
+    //     if (tmp <= 0) {
+    //         return 0;
+    //     }
+    // }
     close(sock);
     gettimeofday(end, NULL);
     ms = (1000000 * (end->tv_sec - begin->tv_sec) + (end->tv_usec - begin->tv_usec)) / 1000;
