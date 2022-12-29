@@ -147,27 +147,38 @@ int judge_po(char *po, char **pop, struct sockaddr_in *addr) {
 }
 
 int connect_to(struct timeval *begin, struct timeval *end, struct sockaddr_in *addr) {
-    /* todo: 创建套接字, 并发起 TCP 连接
+    /* todo: 创建套接字, 并发起 TCP 连接 (默认 10 秒钟超时)
      * todo: 针对上述过程计时, 返回计时结果, 若连接失败则计时结果为 0
      */
     int sock;
     int connect_result;
     int ms;
-    int timeout = 10;
+    int timeout_io = 10;
+    int mode = 1;
+    struct timeval timeout;
+
+    fd_set sfd;
+    timeout.tv_sec = 10;
+    timeout.tv_usec = 0;
 
     gettimeofday(begin, NULL);
     sock = socket(addr->sin_family, SOCK_STREAM, 0);
-    setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(int));
-    setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(int));
-    connect_result = connect(sock, (struct sockaddr *)&addr, sizeof(addr));
+    setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout_io, sizeof(int));
+    setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout_io, sizeof(int));
+    ioctl(sock, FIONBIO, (unsigned long *)&mode);
+    connect_result = connect(sock, (struct sockaddr *)addr, sizeof(*addr));
+    if (connect_result != 0) {
+        FD_ZERO(&sfd);
+        FD_SET(sock, &sfd);
+        if (select(sock + 1, NULL, &sfd, NULL, &timeout) <= 0) {
+            close(sock);
+            return 0;
+        }
+    }
     close(sock);
     gettimeofday(end, NULL);
     ms = (1000000 * (end->tv_sec - begin->tv_sec) + (end->tv_usec - begin->tv_usec)) / 1000;
-    if (connect_result == 0) {
-        return ms;
-    } else {
-        return 0;
-    }
+    return ms;
 }
 
 int max(int *num, int size) {
@@ -194,14 +205,16 @@ int min(int *num, int size) {
     return min;
 }
 
-int avg(int *num, int size) {
+int avg(int *num, int size, int counts) {
     int total = 0;
 
     for (int i = 0; i < size; i++) {
-        total += num[i];
+        if (num[i] != 0) {
+            total += num[i];
+        }
     }
 
-    return total / size;
+    return total / counts;
 }
 
 
@@ -293,7 +306,7 @@ int main(int argc, char *argv[]) {
 
     max_ms = max(ms, count);
     min_ms = min(ms, count);
-    avg_ms = avg(ms, count);
+    avg_ms = avg(ms, count, counts);
     if (quiet == 0) {
         printf("Tcping statistics tcp://%s:%s\n", ipp, pop);
         printf("    %d times request success, %d times request error\n", counts, counte);
