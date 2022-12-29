@@ -10,11 +10,11 @@
 
 #include <arpa/inet.h>
 #include <errno.h>
+#include <getopt.h>
 #include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <time.h>
@@ -85,10 +85,10 @@ void error(const char *func, const char *error) {
  **********************************************************************************************************************
  */
 int judge_ip(char *ip, char **ipp, struct sockaddr_in *addr) {
-    /* todo: 分切套接字得到 IPv4/IPv6 地址, 验证 IPv4/IPv6 地址是否符合书写规范
-     * todo: 已经验证通过的 IPv4/IPv6 地址, 赋予 sockaddr_in.sin_addr.s_addr 数据字段
-     * todo: 已经验证通过的 IPv4/IPv6 地址, 赋予 ipp 字符串指针
-     * return: IPv4/IPv6 地址校验成功返回值为 1, IPv4/IPv6 地址校验失败返回值为 0
+    /* Todo: 分切套接字得到 IPv4/IPv6 地址, 验证 IPv4/IPv6 地址是否符合书写规范
+     * Todo: 已经验证通过的 IPv4/IPv6 地址, 赋予 sockaddr_in.sin_addr.s_addr 数据字段
+     * Todo: 已经验证通过的 IPv4/IPv6 地址, 赋予 ipp 字符串指针
+     * Return: IPv4/IPv6 地址校验成功返回值为 1, IPv4/IPv6 地址校验失败返回值为 0
      */
     struct in_addr ipv4;
     struct in6_addr ipv6;
@@ -120,10 +120,10 @@ int judge_ip(char *ip, char **ipp, struct sockaddr_in *addr) {
 }
 
 int judge_po(char *po, char **pop, struct sockaddr_in *addr) {
-    /* todo: 分切套接字得到端口号, 验证端口号是否符合书写规范
-     * todo: 已经验证通过的端口号, 赋予 sockaddr_in.sin_port 数据字段
-     * todo: 已经验证通过的端口号, 赋予 pop 字符串指针
-     * return: 端口号校验成功返回值为 1, 端口号校验失败返回值为 0
+    /* Todo: 分切套接字得到端口号, 验证端口号是否符合书写规范
+     * Todo: 已经验证通过的端口号, 赋予 sockaddr_in.sin_port 数据字段
+     * Todo: 已经验证通过的端口号, 赋予 pop 字符串指针
+     * Return: 端口号校验成功返回值为 1, 端口号校验失败返回值为 0
      */
     const char tag = ':';
 
@@ -147,38 +147,33 @@ int judge_po(char *po, char **pop, struct sockaddr_in *addr) {
 }
 
 int connect_to(struct timeval *begin, struct timeval *end, struct sockaddr_in *addr) {
-    /* todo: 创建套接字, 并发起 TCP 连接 (默认 10 秒钟超时)
-     * todo: 针对上述过程计时, 返回计时结果, 若连接失败则计时结果为 0
+    /* Todo: 创建套接字, 并发起 TCP 连接 (默认 10 秒钟超时)
+     * Todo: 针对上述过程计时, 返回计时结果, 若连接失败则计时结果为 0
+     * Notice: 套接字的非阻塞工作模式无法适应内网的 TCP 连接
      */
     int sock;
     int connect_result;
     int ms;
-    int timeout_io = 10;
-    int mode = 1;
-    struct timeval timeout;
-
-    fd_set sfd;
-    timeout.tv_sec = 10;
-    timeout.tv_usec = 0;
+    int timeout = 10;
 
     gettimeofday(begin, NULL);
     sock = socket(addr->sin_family, SOCK_STREAM, 0);
-    setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout_io, sizeof(int));
-    setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout_io, sizeof(int));
-    ioctl(sock, FIONBIO, (unsigned long *)&mode);
+    setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof(int));
+    setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(int));
     connect_result = connect(sock, (struct sockaddr *)addr, sizeof(*addr));
-    if (connect_result != 0) {
-        FD_ZERO(&sfd);
-        FD_SET(sock, &sfd);
-        if (select(sock + 1, NULL, &sfd, NULL, &timeout) <= 0) {
-            close(sock);
-            return 0;
-        }
-    }
     close(sock);
     gettimeofday(end, NULL);
-    ms = (1000000 * (end->tv_sec - begin->tv_sec) + (end->tv_usec - begin->tv_usec)) / 1000;
-    return ms;
+    if (connect_result == 0) {
+        ms = (1000000 * (end->tv_sec - begin->tv_sec) + (end->tv_usec - begin->tv_usec)) / 1000;
+        if (ms == 0) {
+            /* Todo: 建立本机的 TCP 连接时, 因数据精度不够, 可能导致计时为 0 毫秒, 人工将其重置为 1 毫秒
+             */
+            ms = 1;
+        }
+        return ms;
+    } else {
+        return 0;
+    }
 }
 
 int max(int *num, int size) {
@@ -214,7 +209,11 @@ int avg(int *num, int size, int counts) {
         }
     }
 
-    return total / counts;
+    if (counts != 0) {
+        return total / counts;
+    } else {
+        return 0;
+    }
 }
 
 
