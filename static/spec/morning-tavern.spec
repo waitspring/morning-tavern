@@ -1,15 +1,15 @@
-Name:		   morning-tavern
-Version:	   1.0.1
-Release:	   1%{?dist}
-Summary:	   A good repository for bash tools
+Name:          morning-tavern
+Version:       1.0.1
+Release:       1%{?dist}
+Summary:       A good repository for bash tools
 
-Group:		   Development/Tools
-License:	   Apache 2.0
-URL:		   https://github.com/waitspring/morning-tavern
-Source0:	   %{name}-%{version}.tar.gz
+Group:         Development/Tools
+License:       Apache 2.0
+URL:           https://github.com/waitspring/morning-tavern
+Source0:       %{name}-%{version}.tar.gz
 
 BuildRequires: gcc, make
-Requires:	   bash
+Requires:      bash
 BuildArch:     x86_64
 
 %description
