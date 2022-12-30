@@ -28,11 +28,11 @@
  */
 void usage(void) {
     puts("Usage: tcping [option...] socket");
-    puts("    -c, --count=TIMES                  配置命令发起 TIMES 次 TCP 连接, 默认值为 -1 (保持长 TCPING)");
-    puts("    -i, --interval=NUM                 配置两次连接中的停顿时间为 NUM 秒钟, 默认值为 1 秒钟");
-    puts("    -q, --quiet                        开启静默执行模式, 命令屏蔽正常输出");
-    puts("    -h, --help                         列出命令的帮助信息");
-    puts("    -v, --version                      列出命令的版本信息");
+    puts("    -c, --count=NUM                    make NUM times TCP connection, default 86400");
+    puts("    -i, --interval=NUM                 pause time for two connections as NUM seconds, default 1");
+    puts("    -q, --quiet                        enable the silent execution mode");
+    puts("    -h, --help                         list this help information");
+    puts("    -v, --version                      list this command version information");
     puts("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     puts("Examp: tcping -c 1 127.0.0.1:22");
     puts("       tcping -c 1 [::1]:22");
@@ -115,7 +115,8 @@ int judge_ip(char *ip, char **ipp, struct sockaddr_in *addr) {
         return 1;
     }
 
-    error("judge_ip", "目标地址检查失败, 目标地址不符合 IPv4/ IPv6 的书写规范");
+    error("judge_ip", "check target address error");
+    error("judge_ip", "target address does not conform to the IPv4/IPv6 writing specification");
     return 0;
 }
 
@@ -132,12 +133,14 @@ int judge_po(char *po, char **pop, struct sockaddr_in *addr) {
         if (po[i] >= '0' && po[i] <='9') {
             continue;
         } else {
-            error("judge_po", "目标端口检查失败, 目标端口不符合书写规范");
+            error("judge_po", "check target port error");
+            error("judge_po", "target port does not conform to the port writing specification");
             return 0;
         }
     }
     if (atoi(po) > 65535) {
-        error("judge_po", "目标端口检查失败, 目标端口已超过取值范围");
+        error("judge_po", "check target port error");
+        error("judge_po", "target port has exceeded the value range");
         return 0;
     }
 
@@ -255,13 +258,15 @@ int main(int argc, char *argv[]) {
                 version();
                 return 0;
             case '?':                            // getopt 函数提供给用户捕获无效的命令选项
-                error("main", "选项类型检查失败, 请使用 $ tcping -h 查阅命令的帮助信息");
+                error("main", "option type check error");
+                error("main", "exeute $ tcping -h find help information");
                 return 1;
         }
     }
 
     if ((argc - optind) != 1) {
-        error("main", "参数数量检查失败, 请使用 $ tcping -h 查阅命令的帮助信息");
+        error("main", "option number check error");
+        error("main", "exeute $ tcping -h find help information");
         return 1;
     } else {
         parameter = argv[optind];
@@ -273,7 +278,8 @@ int main(int argc, char *argv[]) {
         /* judge_ip() 执行结束时, 字符数组变量 ip 仍然存储完整的目标套接字 (:port 部分被切割)
          * judge_po() 执行结束时, 字符数组变量 po 仍然存储完整的目标套接字
          */
-        error("main", "参数赋值检查失败, 请使用 $ tcping -h 查阅命令的帮助信息");
+        error("main", "option value check error");
+        error("main", "exeute $ tcping -h find help information");
         return 1;
     }
 
