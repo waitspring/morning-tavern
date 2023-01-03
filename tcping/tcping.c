@@ -1,15 +1,20 @@
 /**********************************************************************************************************************
  *                                                                                                                    *
- * main.c                                                                                                             *
- * Fu Xuanming (2022-2023)                                                                                            *
+ *                                           ______                                                                   *
+ *                                          (_) |          o                                                          *
+ *                                              | __    _      _  _    __,                                            *
+ *                                            _ |/    |/ \_|  / |/ |  /  |                                            *
+ *                                           (_/ \___/|__/ |_/  |  |_/\_/|/                                           *
+ *                                                   /|                 /|                                            *
+ *                                                   \|                 \|                                            *
  *                                                                                                                    *
  **********************************************************************************************************************
- * 
- * 
+ * 文件名称: tcping.c
+ * 编译方法: gcc --std=c99 -o /usr/bin/tcping /path/to/tcping.c
+ * 作者信息: Fu Xuanming (2022-2023)
  */
 
 #include <arpa/inet.h>
-#include <errno.h>
 #include <getopt.h>
 #include <netdb.h>
 #include <stdio.h>
@@ -28,14 +33,13 @@
  */
 void usage(void) {
     puts("Usage: tcping [option...] socket");
-    puts("    -c, --count=TIMES                  配置命令发起 TIMES 次 TCP 连接, 默认值为 -1 (保持长 TCPING)");
-    puts("    -i, --interval=NUM                 配置两次连接中的停顿时间为 NUM 秒钟, 默认值为 1 秒钟");
-    puts("    -q, --quiet                        开启静默执行模式, 命令屏蔽正常输出");
-    puts("    -h, --help                         列出命令的帮助信息");
-    puts("    -v, --version                      列出命令的版本信息");
-    puts("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-    puts("Examp: tcping -c 1 127.0.0.1:22");
-    puts("       tcping -c 1 [::1]:22");
+    puts("");
+    puts("    -c, --count=NUM                    make NUM times TCP connection, default 86400");
+    puts("    -i, --interval=NUM                 pause time for two connections as NUM seconds, default 1");
+    puts("    -q, --quiet                        enable the silent execution mode");
+    puts("    -h, --help                         list this help information");
+    puts("    -v, --version                      list this command version information");
+    puts("");
 }
 
 void version(void) {
@@ -85,10 +89,11 @@ void error(const char *func, const char *error) {
  **********************************************************************************************************************
  */
 int judge_ip(char *ip, char **ipp, struct sockaddr_in *addr) {
-    /* Todo: 分切套接字得到 IPv4/IPv6 地址, 验证 IPv4/IPv6 地址是否符合书写规范
-     * Todo: 已经验证通过的 IPv4/IPv6 地址, 赋予 sockaddr_in.sin_addr.s_addr 数据字段
-     * Todo: 已经验证通过的 IPv4/IPv6 地址, 赋予 ipp 字符串指针
-     * Return: IPv4/IPv6 地址校验成功返回值为 1, IPv4/IPv6 地址校验失败返回值为 0
+    /* Todo: 分切套接字得到 IPv4 地址, 验证 IPv4 地址是否符合书写规范
+     * Todo: 已经验证通过的 IPv4 地址, 赋予 sockaddr_in.sin_addr.s_addr 数据字段
+     * Todo: 已经验证通过的 IPv4 地址, 赋予 ipp 字符串指针
+     * Todo: 如果传入参数为 IPv6 地址, 抛出错误信息
+     * Return: IPv4 地址校验成功返回值为 1, IPv4 地址校验失败返回值为 0
      */
     struct in_addr ipv4;
     struct in6_addr ipv6;
@@ -109,13 +114,13 @@ int judge_ip(char *ip, char **ipp, struct sockaddr_in *addr) {
         return 1;
     }
     if (inet_pton(AF_INET6, (char *)ip, &ipv6)) {
-        addr->sin_family = AF_INET6;
-        addr->sin_addr.s_addr = inet_addr(ip);
-        *ipp = ip;
-        return 1;
+        error("judge_ip", "check target address error");
+        error("judge_ip", "target address is IPv6 address, maybe you can use tcping6 command");
+        return 0;
     }
 
-    error("judge_ip", "目标地址检查失败, 目标地址不符合 IPv4/ IPv6 的书写规范");
+    error("judge_ip", "check target address error");
+    error("judge_ip", "target address does not conform to the IPv4 writing specification");
     return 0;
 }
 
@@ -132,12 +137,14 @@ int judge_po(char *po, char **pop, struct sockaddr_in *addr) {
         if (po[i] >= '0' && po[i] <='9') {
             continue;
         } else {
-            error("judge_po", "目标端口检查失败, 目标端口不符合书写规范");
+            error("judge_po", "check target port error");
+            error("judge_po", "target port does not conform to the port writing specification");
             return 0;
         }
     }
     if (atoi(po) > 65535) {
-        error("judge_po", "目标端口检查失败, 目标端口已超过取值范围");
+        error("judge_po", "check target port error");
+        error("judge_po", "target port has exceeded the value range");
         return 0;
     }
 
@@ -255,13 +262,15 @@ int main(int argc, char *argv[]) {
                 version();
                 return 0;
             case '?':                            // getopt 函数提供给用户捕获无效的命令选项
-                error("main", "选项类型检查失败, 请使用 $ tcping -h 查阅命令的帮助信息");
+                error("main", "option type check error");
+                error("main", "exeute $ tcping -h find help information");
                 return 1;
         }
     }
 
     if ((argc - optind) != 1) {
-        error("main", "参数数量检查失败, 请使用 $ tcping -h 查阅命令的帮助信息");
+        error("main", "option number check error");
+        error("main", "exeute $ tcping -h find help information");
         return 1;
     } else {
         parameter = argv[optind];
@@ -273,7 +282,8 @@ int main(int argc, char *argv[]) {
         /* judge_ip() 执行结束时, 字符数组变量 ip 仍然存储完整的目标套接字 (:port 部分被切割)
          * judge_po() 执行结束时, 字符数组变量 po 仍然存储完整的目标套接字
          */
-        error("main", "参数赋值检查失败, 请使用 $ tcping -h 查阅命令的帮助信息");
+        error("main", "option value check error");
+        error("main", "exeute $ tcping -h find help information");
         return 1;
     }
 
@@ -281,8 +291,8 @@ int main(int argc, char *argv[]) {
     int max_ms = 0;
     int min_ms = 0;
     int avg_ms = 0;
-    int counts = 0;                              // 统计成功次数
-    int counte = 0;                              // 统计失败次数
+    int counts = 0;                              // 统计成功次数 (count success)
+    int counte = 0;                              // 统计失败次数 (count error)
 
     for (int i = 0; i < count; i++) {
         struct timeval begin;
@@ -307,10 +317,12 @@ int main(int argc, char *argv[]) {
     min_ms = min(ms, count);
     avg_ms = avg(ms, count, counts);
     if (quiet == 0) {
+        printf("\n");
         printf("Tcping statistics tcp://%s:%s\n", ipp, pop);
         printf("    %d times request success, %d times request error\n", counts, counte);
         printf("Approximate trip times:\n");
         printf("    Maximum = %d(ms), Minimum = %d(ms), Average = %d(ms)\n", max_ms, min_ms, avg_ms);
+        printf("\n");
     }
 
     if (counte == count) {
