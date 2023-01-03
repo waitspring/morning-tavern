@@ -6,18 +6,20 @@
 
 **Tcping** 小工具由本人重构之后, 具备下述特点:
 
-+ 支持在 Shell 脚本内, 配合 `IFS` 命令使用
-+ 支持静默工作模式
-+ 支持不同的返回码
++ 允许在 `Shell` 脚本内配合 `IFS` 命令与循环结构使用
++ 允许使用静默工作模式
++ 根据执行结果的不同有不同的退出码:
+  * TCP 连接全部建立成功使用数值 0 作为退出码
+  * TCP 连接部分建立成功使用数值 1 作为退出码
+  * TCP 连接全部建立失败使用数值 2 作为退出码
 
 ### 二、使用方法
 
 **Tcping** 小工具的安装方法说明如下:
 
 ```bash
-$ gcc --std=c99 -o tcping tcping.c
-$ chmod a+x tcping
-$ cp tcping /usr/bin/tcping
+$ gcc --std=c99 -o /usr/bin/tcping /path/to/tcping.c
+$ chmod a+x /usr/bin/tcping
 ```
 
 **Tcping** 小工具的使用方法说明如下:
