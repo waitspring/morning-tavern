@@ -1,14 +1,24 @@
 # RPM 仓库结构
 
-`/srv/morning-tavern-1.0.1` 的目录结构如下:
+`/srv/morning-tavern-1.0.2` 的目录结构如下:
 
 ```
-/srv/morning-tavern-1.0.1
+/srv/morning-tavern-1.0.2
     │
     ├──── searchme
     │     ├──── searchme
     │     └──── searchme.conf
-    └──── tcping
+    ├──── tcping
+    │     ├──── aclocal.m4
+    │     ├──── config.h.in
+    │     ├──── configure
+    │     ├──── configure.ac
+    │     ├──── Makefile.am
+    │     ├──── Makefile.in
+    │     └──── src
+    │           ├──── tcping
+    │           └──── tcping.c
+    └──── tcping6
           ├──── aclocal.m4
           ├──── config.h.in
           ├──── configure
@@ -16,8 +26,8 @@
           ├──── Makefile.am
           ├──── Makefile.in
           └──── src
-                ├──── tcping
-                └──── tcping.c
+                ├──── tcping6
+                └──── tcping6.c
 
 ```
 
