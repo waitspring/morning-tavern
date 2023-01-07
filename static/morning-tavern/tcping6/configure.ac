@@ -1,5 +1,5 @@
 AC_PREREQ([2.69])
-AC_INIT([morning-tavern], [1.0.2], [newsfuxuanming@foxmail.com])
+AC_INIT([morning-tavern], [1.0.3], [newsfuxuanming@foxmail.com])
 AM_INIT_AUTOMAKE
 AC_CONFIG_SRCDIR([src/tcping6.c])
 AC_CONFIG_HEADERS([config.h])

@@ -1,5 +1,5 @@
 Name:          morning-tavern
-Version:       1.0.2
+Version:       1.0.3
 Release:       1%{?dist}
 Summary:       A good repository for bash tools
 
@@ -42,13 +42,12 @@ install -m 0664 %{_builddir}/%{name}-%{version}/searchme/searchme.conf %{buildro
 %{_bindir}/tcping6
 
 %changelog
+* Sat Jan 08 2023 waitspring <newsfuxuanming@foxmail.com>
+- Support the command tcping for domain
 * Fri Jan 07 2023 waitspring <newsfuxuanming@foxmail.com>
 - Create the package for tcping6 command
-- Create the package for tcping command
-- Create the package for searchme command
 * Fri Dec 30 2022 waitspring <newsfuxuanming@foxmail.com>
 - Create the package for tcping command
-- Create the package for searchme command
 * Thu Dec 9 2021 waitspring <newsfuxuanming@foxmail.com>
 - Create the package for searchme command
 
