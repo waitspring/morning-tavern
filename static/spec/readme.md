@@ -1,9 +1,9 @@
 # RPM 仓库结构
 
-`/srv/morning-tavern-1.0.2` 的目录结构如下:
+`/srv/morning-tavern-1.0.3` 的目录结构如下:
 
 ```
-/srv/morning-tavern-1.0.2
+/srv/morning-tavern-1.0.3
     │
     ├──── searchme
     │     ├──── searchme
@@ -40,7 +40,7 @@
     ├──── BUILDROOT
     ├──── RPMS
     ├──── SOURCES
-    │     └──── morning-tavern-1.0.1.tar.gz
+    │     └──── morning-tavern-1.0.3.tar.gz
     ├──── SPECS
     │     └──── morning-tavern.spec
     └──── SRPMS

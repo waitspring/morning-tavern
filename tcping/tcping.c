@@ -95,17 +95,23 @@ int judge_ip(char *ip, char **ipp, struct sockaddr_in *addr) {
      * Todo: 如果传入参数为 IPv6 地址, 抛出错误信息
      * Return: IPv4 地址校验成功返回值为 1, IPv4 地址校验失败返回值为 0
      */
-    struct in_addr ipv4;
-    struct in6_addr ipv6;
+    struct in_addr   ipv4;
+    struct in6_addr  ipv6;
+    struct hostent  *hostinfo;
+
     const char tag = ':';
     const char sign[2] = {'[', ']'};
-    
+
     ip[strlen(ip) - strlen(strrchr(ip, tag))] = '\0';
     if (strrchr(ip, sign[0])) {
         ip = &strrchr(ip, sign[0])[1];
     }
     if (strrchr(ip, sign[1])) {
         ip[strlen(ip) - strlen(strrchr(ip, sign[1]))] = '\0';
+    }
+    hostinfo = gethostbyname(ip);                // 尝试执行域名转换
+    if (hostinfo) {
+        strcpy(ip, inet_ntoa(*(struct in_addr *)hostinfo->h_addr_list[0]));
     }
     if (inet_pton(AF_INET, (char *)ip, &ipv4)) {
         addr->sin_family = AF_INET;
