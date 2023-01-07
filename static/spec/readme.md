@@ -40,7 +40,7 @@
     ├──── BUILDROOT
     ├──── RPMS
     ├──── SOURCES
-    │     └──── morning-tavern-1.0.1.tar.gz
+    │     └──── morning-tavern-1.0.3.tar.gz
     ├──── SPECS
     │     └──── morning-tavern.spec
     └──── SRPMS
