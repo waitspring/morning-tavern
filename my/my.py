@@ -41,7 +41,7 @@ class Logger(object):
     """
     output = logging.getLogger('xxxxxx')
     output.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(fmt='%(asctime)s.%(msecs)03d %(levelname)s %(name)s %(message)s', 
+    formatter = logging.Formatter(fmt='%(asctime)s.%(msecs)03d %(levelname)s [%(name)s] %(message)s', 
                                   datefmt='%Y-%m-%d %H:%M:%S')
     logfile = os.path.join(os.path.dirname(os.path.abspath('__file__')), 'log', 'xxxxxx.log')
     if not os.path.isdir(os.path.dirname(logfile)):
